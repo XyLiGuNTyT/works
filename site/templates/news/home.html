@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Добро пожаловать!</h1>
+    <p class="lead">Egorik — это новостной форум, оставляйте новости, смотрите, коментируйте.</p>
+</div>
+
+<h2>Последние новости</h2>
+<div class="row">
+    {% for news in latest_news %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if news.image %}
+                    <img src="{{ news.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ news.title }}</h5>
+                    <p class="card-text">{{ news.content|truncatewords:20 }}</p>
+                    <a href="{% url 'news_detail' news.id %}" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>Новостей пока нет.</p>
+    {% endfor %}
+</div>
+{% endblock %}

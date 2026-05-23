@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Все новости{% endblock %}
+{% block content %}
+<h1>Новости</h1>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-auto">
+        <input type="text" name="search" value="{{ search_query }}" class="form-control" placeholder="Поиск по заголовку">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </div>
+    <div class="col-auto">
+        <a href="?sort={% if sort == 'desc' %}asc{% else %}desc{% endif %}&search={{ search_query }}" class="btn btn-secondary">
+            {% if sort == 'desc' %}Сначала старые{% else %}Сначала новые{% endif %}
+        </a>
+    </div>
+</form>
+
+<div class="row">
+    {% for news in news_list %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if news.image %}
+                    <img src="{{ news.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ news.title }}</h5>
+                    <p class="card-text">{{ news.content|truncatewords:30 }}</p>
+                    <p class="text-muted">Автор: {{ news.author.username }} | {{ news.pub_date|date:"d.m.Y" }}</p>
+                    <a href="{% url 'news_detail' news.id %}" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>Новостей не найдено.</p>
+    {% endfor %}
+</div>
+{% endblock %}

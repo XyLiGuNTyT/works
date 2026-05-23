@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ news.title }}{% endblock %}
+{% block content %}
+<div class="card mb-4">
+    {% if news.image %}
+        <img src="{{ news.image.url }}" class="img-fluid" alt="{{ news.title }}" style="max-width: 100%; height: auto; border-radius: 12px;">
+    {% endif %}
+    <div class="card-body">
+        <h1 class="card-title">{{ news.title }}</h1>
+        <p class="text-muted">Автор: {{ news.author.username }} | {{ news.pub_date|date:"d.m.Y H:i" }}</p>
+        <p class="card-text">{{ news.content|linebreaks }}</p>
+        {% if user.is_staff %}
+            <a href="{% url 'news_edit' news.pk %}" class="btn btn-sm btn-secondary">Редактировать</a>
+            <a href="{% url 'news_delete' news.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+        {% endif %}
+    </div>
+</div>
+
+<h3>Комментарии ({{ comments.count }})</h3>
+{% for comment in comments %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <strong>{{ comment.author.username }}</strong> <span class="text-muted">{{ comment.created_date|date:"d.m.Y H:i" }}</span>
+            <p>{{ comment.text }}</p>
+        </div>
+    </div>
+{% empty %}
+    <p>Пока нет комментариев.</p>
+{% endfor %}
+
+{% if user.is_authenticated %}
+    <h4>Добавить комментарий</h4>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Отправить</button>
+    </form>
+{% else %}
+    <p><a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий.</p>
+{% endif %}
+{% endblock %}

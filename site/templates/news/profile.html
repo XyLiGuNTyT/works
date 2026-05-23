@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Профиль{% endblock %}
+{% block content %}
+<div class="profile-container" style="background: transparent; color: #f0f0f0;">
+    <h2>Профиль пользователя {{ user.username }}</h2>
+    <p>Email: {{ user.email }}</p>
+    <p>Дата регистрации: {{ user.date_joined|date:"d.m.Y" }}</p>
+
+    <h3>Мои комментарии</h3>
+    <ul class="list-group" style="background: transparent;">
+        {% for comment in comments %}
+            <li class="list-group-item" style="background: rgba(255,255,255,0.1); border: none; color: #f0f0f0; margin-bottom: 8px; border-radius: 16px;">
+                <a href="{% url 'news_detail' comment.news.id %}" style="color: #b8e1ff;">{{ comment.news.title }}</a>: {{ comment.text|truncatewords:20 }}
+            </li>
+        {% empty %}
+            <li class="list-group-item" style="background: rgba(255,255,255,0.05); border: none; color: #ccc;">Вы ещё не оставляли комментариев.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Смена пароля</h3>
+    <form method="post" style="margin-top: 20px;">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-warning">Сменить пароль</button>
+    </form>
+</div>
+{% endblock %}
