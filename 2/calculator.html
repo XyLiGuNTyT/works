@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+            background: #f0f0f0;
+        }
+
+        .calculator {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        #inputField {
+            width: 100%;
+            height: 50px;
+            font-size: 24px;
+            text-align: right;
+            margin-bottom: 20px;
+            padding: 5px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 70px);
+            gap: 10px;
+        }
+
+        button {
+            height: 60px;
+            font-size: 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+        }
+
+        button:hover {
+            background: #e0e0e0;
+        }
+
+        .history {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+
+        .history h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .history-content {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" id="inputField" placeholder="0">
+        
+        <div class="buttons">
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button onclick="appendOperator('/')">/</button>
+            
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button onclick="appendOperator('*')">*</button>
+            
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button onclick="appendOperator('-')">-</button>
+            
+            <button onclick="appendNumber('0')">0</button>
+            <button onclick="appendNumber('.')">.</button>
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="appendOperator('+')">+</button>
+            
+            <button onclick="calculate()" style="grid-column: span 4;">=</button>
+        </div>
+        
+        <div class="history">
+            <h3>История действий</h3>
+            <div class="history-content" id="historyList"></div>
+        </div>
+    </div>
+
+    <script>
+        const inputField = document.getElementById('inputField');
+        const historyList = document.getElementById('historyList');
+        let currentExpression = '';
+
+        function appendNumber(number) {
+            currentExpression += number;
+            inputField.value = currentExpression;
+        }
+
+        function appendOperator(operator) {
+            if (currentExpression === '') return;
+            currentExpression += operator;
+            inputField.value = currentExpression;
+        }
+
+        function clearDisplay() {
+            currentExpression = '';
+            inputField.value = '';
+        }
+
+        function add(a, b) {
+            return a + b;
+        }
+
+        function subtract(a, b) {
+            return a - b;
+        }
+
+        function multiply(a, b) {
+            return a * b;
+        }
+
+        function divide(a, b) {
+            return a / b;
+        }
+
+        function calculate() {
+            if (currentExpression === '') return;
+            
+            let operator = '';
+            let parts = [];
+            
+            if (currentExpression.includes('+')) {
+                operator = '+';
+                parts = currentExpression.split('+');
+            } else if (currentExpression.includes('-')) {
+                operator = '-';
+                parts = currentExpression.split('-');
+            } else if (currentExpression.includes('*')) {
+                operator = '*';
+                parts = currentExpression.split('*');
+            } else if (currentExpression.includes('/')) {
+                operator = '/';
+                parts = currentExpression.split('/');
+            }
+            
+            if (parts.length !== 2) {
+                addToHistory('Ошибка: ' + currentExpression);
+                clearDisplay();
+                return;
+            }
+            
+            const num1 = parseFloat(parts[0]);
+            const num2 = parseFloat(parts[1]);
+            
+            if (isNaN(num1) || isNaN(num2)) {
+                addToHistory('Ошибка: ' + currentExpression);
+                clearDisplay();
+                return;
+            }
+            
+            let result;
+            
+            if (operator === '+') {
+                result = add(num1, num2);
+            } else if (operator === '-') {
+                result = subtract(num1, num2);
+            } else if (operator === '*') {
+                result = multiply(num1, num2);
+            } else if (operator === '/') {
+                if (num2 === 0) {
+                    addToHistory('Ошибка: деление на ноль');
+                    clearDisplay();
+                    return;
+                }
+                result = divide(num1, num2);
+            }
+            
+            const historyEntry = currentExpression + ' = ' + result;
+            addToHistory(historyEntry);
+            currentExpression = result.toString();
+            inputField.value = currentExpression;
+        }
+        
+        function addToHistory(entry) {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.textContent = entry;
+            historyList.appendChild(historyItem);
+        }
+    </script>
+</body>
+</html>
